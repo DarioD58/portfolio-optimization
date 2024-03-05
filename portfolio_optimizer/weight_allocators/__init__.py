@@ -1,0 +1,2 @@
+from portfolio_optimizer.weight_allocators.HierarchicalRiskParity import HierarchicalRiskParity
+from portfolio_optimizer.weight_allocators.SimpleAllocator import SimpleAllocator
