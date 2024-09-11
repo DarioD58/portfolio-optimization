@@ -1,3 +1,1 @@
-from portfolio_optimizer.PortfolioOptimizer import PortfolioOptimizer
-from portfolio_optimizer.generate_experiment import run_experiments
 from portfolio_optimizer.metrics import calc_sharpe_ratio, calc_calmar_ratio, calc_sortino_ratio

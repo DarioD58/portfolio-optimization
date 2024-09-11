@@ -1,16 +1,13 @@
 import numpy as np
 import pandas as pd
-from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.cluster.hierarchy import linkage
 from collections import deque
-import seaborn as sns
-import matplotlib.pyplot as plt
-from portfolio_optimizer.weight_allocators.SimpleAllocator import SimpleAllocator
 from scipy.cluster.hierarchy import ClusterWarning
 from warnings import simplefilter
 simplefilter("ignore", ClusterWarning)
 
 
-class HierarchicalRiskParity(SimpleAllocator):
+class HierarchicalRiskParity:
     def __init__(self) -> None:
         self.tag = f"HRP"
 
