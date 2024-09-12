@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from portfolio_optimizer.hrp_functional import hierarchical_risk_parity
 from portfolio_optimizer.plotting import plot_std, plot_sharpe_ratio
+from portfolio_optimizer.metrics import calc_sharpe_ratio, calc_sortino_ratio
+from dataset.info_data.chosen_stocks import chosen_stocks
 import scienceplots
 import argparse
 from tqdm import tqdm
@@ -15,7 +17,7 @@ parser.add_argument(
     "--subsample",
     type=str,
     default="all",
-    choices=["all", "gics", "gics-uniform"],
+    choices=["all", "gics", "gics-uniform", "predefined"],
     help="Subsample to use for the analysis",
 )
 parser.add_argument(
@@ -77,7 +79,7 @@ if __name__ == "__main__":
         all_gics = list(info_df["GICS Sector"].unique())
         chosen_stocks = (
             info_df.groupby("GICS Sector")
-            .apply(lambda x: x.sample(args.size // len(all_gics), random_state=42))
+            .apply(lambda x: x.sample(args.size // len(all_gics), random_state=0))
             .reset_index(drop=True)
         )
         monthly_returns = monthly_returns.loc[
@@ -88,6 +90,9 @@ if __name__ == "__main__":
         ]
 
         chosen_stocks.to_csv(f"results/{args.subsample}_{args.size}.csv")
+    elif args.subsample == "predefined":
+        monthly_returns = monthly_returns.loc[:, monthly_returns.columns.isin(chosen_stocks)]
+        weekly_returns = weekly_returns.loc[:, weekly_returns.columns.isin(chosen_stocks)]
     else:
         raise ValueError("Invalid subsample argument")
 
@@ -117,12 +122,23 @@ if __name__ == "__main__":
         {
             "HRP": portfolio_returns_hrp,
             "1/N": portfolio_returns_eq,
-            "date": relevant_monthly_returns.index,
         }
-    ).set_index("date")
-
-    final_results.to_csv(f"results/{args.subsample}_{args.lookback}.csv")
+    )
 
     plot_std(final_results, f"{args.subsample}_{args.lookback}_std_comparison", window=12)
     plot_sharpe_ratio(final_results, f"{args.subsample}_{args.lookback}_sharpe_ratio_comparison", window=12)
+
+    metrics_df = pd.DataFrame(
+        {
+            "Mean returns": [final_results["HRP"].mean(), final_results["1/N"].mean()],
+            "Standard Deviation": [final_results["HRP"].std(), final_results["1/N"].std()],
+            "Sharpe Ratio": [calc_sharpe_ratio(final_results["HRP"]), calc_sharpe_ratio(final_results["1/N"])],
+            "Sortino Ratio": [calc_sortino_ratio(final_results["HRP"]), calc_sortino_ratio(final_results["1/N"])],
+        },
+        columns=["Mean returns", "Standard Deviation", "Sharpe Ratio", "Sortino Ratio"],
+        index=["HRP", "1/N"],
+    )
+
+    metrics_df.to_csv(f"results/{args.subsample}_{args.lookback}_metrics.csv")
+
 
