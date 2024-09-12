@@ -48,9 +48,7 @@ if __name__ == "__main__":
 
         
     weekly_returns = pd.read_csv("dataset/final_data/weekly_gold_data.csv")
-    monthly_returns = pd.read_csv("dataset/final_data/gold_data.csv").loc[
-        :, ["symbol", "timestamp", "performance", "performance_last_month"]
-    ]
+    monthly_returns = pd.read_csv("dataset/final_data/gold_data.csv")
 
     info_df = pd.read_csv("dataset/info_data/S&P500-Info.csv")
 

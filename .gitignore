@@ -5,8 +5,9 @@ config.yaml
 
 *_tests.ipynb
 
-/dataset
-
 /results
 
 /figures
+
+dataset/raw_data
+dataset/transformed_data
