@@ -3,7 +3,8 @@ This repository supplements our paper "Hierarchical Risk Parity: Efficient Imple
 
 ### Installation
 ---
-Make sure you have python>=3.10 installed
+Make sure you have python>=3.10 installed and setup the environment with:
+
 `pip install -r requirements.txt`
 
 ### Efficiency comparison
