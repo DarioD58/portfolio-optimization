@@ -8,3 +8,6 @@ config.yaml
 
 dataset/raw_data
 dataset/transformed_data
+
+figures/
+results/

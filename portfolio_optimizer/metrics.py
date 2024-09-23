@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
 
-def calc_sharpe_ratio(returns, risk_free_rate=0.01):
+def calc_sharpe_ratio(returns, risk_free_rate=None):
+    if risk_free_rate is None:
+        risk_free_rate = 0.01
     # Calculate the excess returns by subtracting the risk-free rate
-    excess_returns = returns - risk_free_rate
+    excess_returns = returns.reset_index(drop=True) - risk_free_rate.reset_index(drop=True)
 
     # Calculate the average (mean) of excess returns
     avg_excess_returns = excess_returns.mean()
@@ -14,11 +16,11 @@ def calc_sharpe_ratio(returns, risk_free_rate=0.01):
     # Calculate the Sharpe ratio
     sharpe_ratio = avg_excess_returns / std_returns
 
-    return sharpe_ratio * np.sqrt(len(returns))
+    return sharpe_ratio * np.sqrt(12)
 
 def calc_sortino_ratio(returns, risk_free_rate=0.01):
     # Calculate the excess returns by subtracting the risk-free rate
-    excess_returns = returns - risk_free_rate
+    excess_returns = returns.reset_index(drop=True) - risk_free_rate.reset_index(drop=True)
 
     # Calculate the average (mean) of excess returns
     avg_excess_returns = excess_returns.mean()
@@ -29,7 +31,7 @@ def calc_sortino_ratio(returns, risk_free_rate=0.01):
     # Calculate the Sharpe ratio
     sortino_ratio = avg_excess_returns / downside_deviation
 
-    return sortino_ratio * np.sqrt(len(returns))
+    return sortino_ratio * np.sqrt(12)
 
 def calc_calmar_ratio(returns):
     # Calculate the cumulative returns
