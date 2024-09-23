@@ -7,6 +7,7 @@
 import scipy.cluster.hierarchy as sch
 import numpy as np
 import pandas as pd
+import timeit
 
 
 
@@ -25,7 +26,7 @@ def getClusterVar(cov,cItems):
     return cVar
 
 
-def getQuasiDiag(link):
+def getQuasiDiag(link: np.ndarray):
     # Sort clustered items by distance
     link=link.astype(int)
     sortIx=pd.Series([link[-1,0],link[-1,1]])
@@ -77,6 +78,23 @@ def main(x: pd.DataFrame):
 
 
     return hrp
+
+def evaluate_matrix_seriation(x: pd.DataFrame, repeat: int, number: int):
+    corr = x.corr()
+    dist=correlDist(corr)
+    link=sch.linkage(dist,'single')
+    time_new = timeit.repeat(lambda: getQuasiDiag(link), repeat=repeat, number=number)
+    return time_new
+
+def evaluate_recursive_bisection(x: pd.DataFrame, repeat: int, number: int):
+    cov = x.cov()
+    corr = x.corr()
+    dist=correlDist(corr)
+    link=sch.linkage(dist,'single')
+    sortIx=getQuasiDiag(link)
+    time_new = timeit.repeat(lambda: getRecBipart(cov, sortIx), repeat=repeat, number=number)
+
+    return time_new
 
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ from scipy.cluster.hierarchy import linkage
 from collections import deque
 from scipy.cluster.hierarchy import ClusterWarning
 from warnings import simplefilter
+import timeit
 simplefilter("ignore", ClusterWarning)
 
 def _hierachical_tree_clustering(corr_matrix: np.ndarray) -> None:
@@ -93,3 +94,20 @@ def hierarchical_risk_parity(x: pd.DataFrame):
     final_result = {x.columns[i]: round(j, 5) for i, j in zip(sorted_elems, weights_allocation)}
 
     return dict(sorted(final_result.items()))
+
+def evaluate_matrix_seriation(x: pd.DataFrame, repeat: int, number: int):
+    corr_matrix = x.corr().to_numpy()
+    linkage_matrix = _hierachical_tree_clustering(corr_matrix=corr_matrix)
+    time_of_seriation = timeit.repeat(lambda: _seriate_matrix(linkage_matrix=linkage_matrix), number=number, repeat=repeat)
+
+    return time_of_seriation
+
+def evaluate_recursive_bisection(x: pd.DataFrame, repeat: int, number: int):
+    cov_matrix = x.cov().to_numpy()
+    corr_matrix = x.corr().to_numpy()
+    linkage_matrix = _hierachical_tree_clustering(corr_matrix=corr_matrix)
+    sorted_elems = _seriate_matrix(linkage_matrix=linkage_matrix)
+    time_of_bisection = timeit.repeat(lambda: _recursive_bisection(sorted_elems=sorted_elems, cov_matrix=cov_matrix), number=number, repeat=repeat)
+
+    return time_of_bisection
+    
